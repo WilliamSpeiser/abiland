@@ -25,7 +25,7 @@
 
         var geojsonLayer = new L.GeoJSON.AJAX("https://raw.githubusercontent.com/WilliamSpeiser/abiland/main/Vacant_Land_PHL.geojson", {
             style: function (feature) {
-                return {color: 'red'};
+                return {color: 'red', weight:2};
             }
         }).addTo(map);
     </script>
