@@ -31,10 +31,16 @@
                 L.geoJSON(data, {
                     style: function (feature) {
                         return {color: 'red'};
+                    },
+                    onEachFeature: function (feature, layer) {
+                        var popupContent = "<b>Properties:</b><br>";
+                        for (var property in feature.properties) {
+                            popupContent += property + ": " + feature.properties[property] + "<br>";
+                        }
+                        layer.bindPopup(popupContent);
                     }
                 }).addTo(map);
             });
     </script>
 </body>
 </html>
-
