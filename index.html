@@ -23,11 +23,18 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        var geojsonLayer = new L.GeoJSON.AJAX("https://raw.githubusercontent.com/WilliamSpeiser/abiland/main/Vacant_Land_PHL.geojson", {
-            style: function (feature) {
-                return {color: 'red', weight:2};
-            }
-        }).addTo(map);
+        fetch("https://raw.githubusercontent.com/WilliamSpeiser/abiland/main/Vacant_Land_PHL.geojson")
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(data) {
+                L.geoJSON(data, {
+                    style: function (feature) {
+                        return {color: 'red'};
+                    }
+                }).addTo(map);
+            });
     </script>
 </body>
 </html>
+
