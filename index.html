@@ -28,18 +28,19 @@
                 return response.json();
             })
             .then(function(data) {
-                L.geoJSON(data, {
+                var geojsonLayer = L.geoJSON(data, {
                     style: function (feature) {
                         return {color: 'red'};
-                    },
-                    onEachFeature: function (feature, layer) {
-                        var popupContent = "<b>Properties:</b><br>";
-                        for (var property in feature.properties) {
-                            popupContent += property + ": " + feature.properties[property] + "<br>";
-                        }
-                        layer.bindPopup(popupContent);
                     }
                 }).addTo(map);
+
+                geojsonLayer.eachLayer(function(layer) {
+                    var popupContent = "<b>Properties:</b><br>";
+                    for (var property in layer.feature.properties) {
+                        popupContent += property + ": " + layer.feature.properties[property] + "<br>";
+                    }
+                    layer.bindPopup(popupContent);
+                });
             });
     </script>
 </body>
