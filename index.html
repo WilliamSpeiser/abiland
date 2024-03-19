@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Interactive Map</title>
+   <meta charset="utf-8" />
+   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+   <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+   <link rel="stylesheet" href="https://unpkg.com/nouislider/distribute/nouislider.min.css">
+   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+   <script src="https://unpkg.com/nouislider/distribute/nouislider.min.js"></script>
+   <style>
+      #map { height: 80vh; }
+      #slider { margin: 20px; }
+   </style>
+</head>
+<body>
+   <div id="map"></div>
+   <div id="slider"></div>
+   <script>
+      // Initialize the map
+      var map = L.map('map').setView([39.9526, -75.1652], 13); // Adjust the coordinates and zoom level to your data
+
+      // Add a basemap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+         attribution: '© OpenStreetMap contributors'
+      }).addTo(map);
+
+      // Initialize the GeoJSON layer
+      var geojsonLayer = L.geoJson(null, {
+         onEachFeature: function (feature, layer) {
+            layer.bindPopup("Area: " + feature.properties.shape_Area);
+         }
+      }).addTo(map);
+
+      // Load the GeoJSON file
+      fetch("https://raw.githubusercontent.com/WHBSpeiser/abiland/main/Vacant_Land_PHL.geojson?token=GHSAT0AAAAAACP2LS7C7S4VZNB4GQJDMIYKZP2DQHQ")
+         .then(response => response.json())
+         .then(data => {
+            geojsonLayer.addData(data);
+            // Initialize the slider after the data is loaded
+            initializeSlider(data);
+         });
+
+      // Initialize the slider for filtering by area
+      function initializeSlider(data) {
+         var slider = document.getElementById('slider');
+         noUiSlider.create(slider, {
+            start: [0, 100000], // Adjust the range based on your data
+            connect: true,
+            range: {
+               'min': 0,
+               'max': 100000 // Adjust the maximum value based on your data
+            }
+         });
+
+         // Update the GeoJSON layer based on the slider values
+         slider.noUiSlider.on('update', function (values, handle) {
+            var minArea = parseFloat(values[0]);
+            var maxArea = parseFloat(values[1]);
+
+            geojsonLayer.clearLayers();
+            geojsonLayer.addData(data.features.filter(function (feature) {
+               return feature.properties.shape_Area >= minArea && feature.properties.shape_Area <= maxArea;
+            }));
+         });
+      }
+   </script>
+</body>
+</html>
