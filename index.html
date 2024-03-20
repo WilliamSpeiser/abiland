@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nouislider/15.6.1/nouislider.min.css"/>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
     <style>
         #map {
             height: 80vh;
@@ -16,11 +16,15 @@
     </style>
 </head>
 <body>
-    <div class="slider-container" id="area-slider"></div>
+    <div class="slider-container">
+        <div id="area-slider" style="margin-bottom: 20px;"></div>
+        <p>Area Range: <span id="area-range"></span></p>
+    </div>
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/nouislider/15.6.1/nouislider.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
     <script>
         var map = L.map('map').setView([39.9526, -75.1652], 13);
 
@@ -65,22 +69,19 @@
                 });
         }
 
-        var areaSlider = document.getElementById('area-slider');
-
-        noUiSlider.create(areaSlider, {
-            start: [100, 1000],
-            connect: true,
-            step: 5,
-            range: {
-                'min': 100,
-                'max': 1000
-            }
-        });
-
-        areaSlider.noUiSlider.on('update', function (values, handle) {
-            var minArea = parseFloat(values[0]);
-            var maxArea = parseFloat(values[1]);
-            updateMap(minArea, maxArea);
+        $(function() {
+            $("#area-slider").slider({
+                range: true,
+                min: 100,
+                max: 1000,
+                values: [100, 1000],
+                step: 5,
+                slide: function(event, ui) {
+                    $("#area-range").text(ui.values[0] + " - " + ui.values[1]);
+                    updateMap(ui.values[0], ui.values[1]);
+                }
+            });
+            $("#area-range").text($("#area-slider").slider("values", 0) + " - " + $("#area-slider").slider("values", 1));
         });
 
         updateMap(100, 1000);
