@@ -33,18 +33,11 @@
                         return {color: 'red'};
                     },
                     onEachFeature: function (feature, layer) {
-                        if (feature.properties) {
-                            var popupContent = "<table>";
-                            for (var property in feature.properties) {
-                                popupContent += "<tr><td>" + property + "</td><td>" + feature.properties[property] + "</td></tr>";
-                            }
-                            popupContent += "</table>";
-                            layer.bindPopup(popupContent);
-                        }
+                        var popupContent = "Popup content";
+                        layer.bindPopup(popupContent);
                     }
                 }).addTo(map);
             });
     </script>
 </body>
 </html>
-
