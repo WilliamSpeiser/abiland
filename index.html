@@ -14,6 +14,10 @@
             padding: 10px;
             text-align: center;
         }
+        .filter-container {
+            text-align: center;
+            padding: 10px;
+        }
     </style>
 </head>
 <body>
@@ -21,6 +25,12 @@
         <p>For a.b. dreamweaver &lt;3</p>
         <div id="area-slider" style="margin-bottom: 20px;"></div>
         <p>Area Range: <span id="area-range"></span></p>
+    </div>
+    <div class="filter-container">
+        <input type="checkbox" id="individual" checked>
+        <label for="individual">Individual Addresses</label>
+        <input type="checkbox" id="range" checked>
+        <label for="range">Range Addresses</label>
     </div>
     <div id="map"></div>
 
@@ -42,12 +52,20 @@
             if (geojsonLayer) {
                 map.removeLayer(geojsonLayer);
             }
+            var showIndividual = $('#individual').is(':checked');
+            var showRange = $('#range').is(':checked');
             geojsonLayer = L.geoJSON(null, {
                 style: function (feature) {
-                    return {color: 'red'};
+                    if (feature.properties.individual_address === 'y') {
+                        return {color: 'red'};
+                    } else {
+                        return {color: 'yellow'};
+                    }
                 },
                 filter: function (feature) {
-                    return feature.properties.Shape__Area >= minArea && feature.properties.Shape__Area <= maxArea;
+                    var isIndividual = feature.properties.individual_address === 'y';
+                    var inAreaRange = feature.properties.Shape__Area >= minArea && feature.properties.Shape__Area <= maxArea;
+                    return inAreaRange && ((isIndividual && showIndividual) || (!isIndividual && showRange));
                 },
                 onEachFeature: function (feature, layer) {
                     var popupContent = "<table>";
@@ -83,11 +101,14 @@
                     updateMap(ui.values[0], ui.values[1]);
                 }
             });
+            $("#area-range").text
             $("#area-range").text($("#area-slider").slider("values", 0) + " - " + $("#area-slider").slider("values", 1));
-        });
+            updateMap($("#area-slider").slider("values", 0), $("#area-slider").slider("values", 1));
 
-        updateMap(100, 1000);
+            $('#individual, #range').change(function() {
+                updateMap($("#area-slider").slider("values", 0), $("#area-slider").slider("values", 1));
+            });
+        });
     </script>
 </body>
 </html>
-
