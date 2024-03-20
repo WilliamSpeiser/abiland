@@ -32,9 +32,9 @@
         <input type="checkbox" id="range" checked>
         <label for="range">Range Addresses</label>
         <input type="checkbox" id="touching" checked>
-        <label for="touching">Touching Other Lots</label>
-        <input type="checkbox" id="not-touching" checked>
-        <label for="not-touching">Not Touching Other Lots</label>
+        <label for="touching">Touching Lots</label>
+        <input type="checkbox" id="not_touching" checked>
+        <label for="not_touching">Non-Touching Lots</label>
     </div>
     <div id="map"></div>
 
@@ -59,7 +59,7 @@
             var showIndividual = $('#individual').is(':checked');
             var showRange = $('#range').is(':checked');
             var showTouching = $('#touching').is(':checked');
-            var showNotTouching = $('#not-touching').is(':checked');
+            var showNotTouching = $('#not_touching').is(':checked');
             geojsonLayer = L.geoJSON(null, {
                 style: function (feature) {
                     if (feature.properties.individual_address === 'y') {
@@ -70,10 +70,9 @@
                 },
                 filter: function (feature) {
                     var isIndividual = feature.properties.individual_address === 'y';
-                    var isTouching = feature.properties.touching === true;
+                    var isTouching = feature.properties.touching === 'y';
                     var inAreaRange = feature.properties.Shape__Area >= minArea && feature.properties.Shape__Area <= maxArea;
-                    return inAreaRange && ((isIndividual && showIndividual) || (!isIndividual && showRange)) &&
-                           ((isTouching && showTouching) || (!isTouching && showNotTouching));
+                    return inAreaRange && ((isIndividual && showIndividual) || (!isIndividual && showRange)) && ((isTouching && showTouching) || (!isTouching && showNotTouching));
                 },
                 onEachFeature: function (feature, layer) {
                     var popupContent = "<table>";
@@ -92,9 +91,8 @@
                 .then(function(response) {
                     return response.json();
                 })
-                .then(function(data)
                 .then(function(data) {
-                    geojsonLayer.addData(data);
+                                        geojsonLayer.addData(data);
                 });
         }
 
@@ -113,11 +111,11 @@
             $("#area-range").text($("#area-slider").slider("values", 0) + " - " + $("#area-slider").slider("values", 1));
             updateMap($("#area-slider").slider("values", 0), $("#area-slider").slider("values", 1));
 
-            $('#individual, #range, #touching, #not-touching').change(function() {
+            // Update the map when the checkboxes are changed
+            $('#individual, #range, #touching, #not_touching').change(function() {
                 updateMap($("#area-slider").slider("values", 0), $("#area-slider").slider("values", 1));
             });
         });
     </script>
 </body>
 </html>
-
