@@ -28,20 +28,23 @@
                 return response.json();
             })
             .then(function(data) {
-                var geojsonLayer = L.geoJSON(data, {
+                L.geoJSON(data, {
                     style: function (feature) {
                         return {color: 'red'};
+                    },
+                    onEachFeature: function (feature, layer) {
+                        if (feature.properties) {
+                            var popupContent = "<table>";
+                            for (var property in feature.properties) {
+                                popupContent += "<tr><td>" + property + "</td><td>" + feature.properties[property] + "</td></tr>";
+                            }
+                            popupContent += "</table>";
+                            layer.bindPopup(popupContent);
+                        }
                     }
                 }).addTo(map);
-
-                geojsonLayer.eachLayer(function(layer) {
-                    var popupContent = "<b>Properties:</b><br>";
-                    for (var property in layer.feature.properties) {
-                        popupContent += property + ": " + layer.feature.properties[property] + "<br>";
-                    }
-                    layer.bindPopup(popupContent);
-                });
             });
     </script>
 </body>
 </html>
+
