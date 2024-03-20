@@ -23,21 +23,24 @@
             attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
-        fetch("https://raw.githubusercontent.com/WilliamSpeiser/abiland/main/Vacant_Land_PHL.geojson")
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(data) {
-                L.geoJSON(data, {
-                    style: function (feature) {
-                        return {color: 'red'};
-                    },
-                    onEachFeature: function (feature, layer) {
-                        var popupContent = "Popup content";
-                        layer.bindPopup(popupContent);
-                    }
-                }).addTo(map);
-            });
+        var geojsonFeature = {
+            "type": "Feature",
+            "properties": {
+                "name": "Coors Field",
+                "amenity": "Baseball Stadium",
+                "popupContent": "This is where the Rockies play!"
+            },
+            "geometry": {
+                "type": "Point",
+                "coordinates": [-75.1652, 39.9526]
+            }
+        };
+
+        L.geoJSON(geojsonFeature, {
+            onEachFeature: function (feature, layer) {
+                layer.bindPopup(feature.properties.popupContent);
+            }
+        }).addTo(map);
     </script>
 </body>
 </html>
