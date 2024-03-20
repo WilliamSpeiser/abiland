@@ -5,6 +5,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nouislider/15.6.1/nouislider.min.css"/>
     <style>
         #map {
             height: 80vh;
@@ -15,19 +16,11 @@
     </style>
 </head>
 <body>
-    <div class="slider-container">
-        <label for="min-area-slider">Min Area:</label>
-        <input type="range" id="min-area-slider" min="100" max="10000" value="100" step="10">
-        <span id="min-area-value">0</span>
-    </div>
-    <div class="slider-container">
-        <label for="max-area-slider">Max Area:</label>
-        <input type="range" id="max-area-slider" min="100" max="7000" value="7000" step="10">
-        <span id="max-area-value">10000</span>
-    </div>
+    <div class="slider-container" id="area-slider"></div>
     <div id="map"></div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/nouislider/15.6.1/nouislider.min.js"></script>
     <script>
         var map = L.map('map').setView([39.9526, -75.1652], 13);
 
@@ -72,23 +65,25 @@
                 });
         }
 
-        var minSlider = document.getElementById("min-area-slider");
-        var maxSlider = document.getElementById("max-area-slider");
-        var minOutput = document.getElementById("min-area-value");
-        var maxOutput = document.getElementById("max-area-value");
-        minOutput.innerHTML = minSlider.value;
-        maxOutput.innerHTML = maxSlider.value;
+        var areaSlider = document.getElementById('area-slider');
 
-        function updateSliders() {
-            minOutput.innerHTML = minSlider.value;
-            maxOutput.innerHTML = maxSlider.value;
-            updateMap(parseInt(minSlider.value), parseInt(maxSlider.value));
-        }
+        noUiSlider.create(areaSlider, {
+            start: [100, 1000],
+            connect: true,
+            step: 5,
+            range: {
+                'min': 100,
+                'max': 1000
+            }
+        });
 
-        minSlider.oninput = updateSliders;
-        maxSlider.oninput = updateSliders;
+        areaSlider.noUiSlider.on('update', function (values, handle) {
+            var minArea = parseFloat(values[0]);
+            var maxArea = parseFloat(values[1]);
+            updateMap(minArea, maxArea);
+        });
 
-        updateMap(parseInt(minSlider.value), parseInt(maxSlider.value));
+        updateMap(100, 1000);
     </script>
 </body>
 </html>
